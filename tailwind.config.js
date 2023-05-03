@@ -22,6 +22,9 @@ module.exports = {
           light: "#e6e6e6",
         },
       },
+      transitionProperty: {
+        width: 'width',
+      },  
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
