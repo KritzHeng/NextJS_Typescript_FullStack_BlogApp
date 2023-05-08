@@ -21,6 +21,7 @@ module.exports = {
           dark: "#707070",
           light: "#e6e6e6",
         },
+        action: "#3B82F6",
       },
       transitionProperty: {
         width: 'width',
@@ -32,5 +33,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography')],
 }
