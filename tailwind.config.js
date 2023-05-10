@@ -12,6 +12,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        "primary-dark": "#1f1f1f",
         'primary': '#ffffff',
         highlight: {
           dark: '#FFFFFF',
@@ -32,6 +33,9 @@ module.exports = {
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
     },
+    backgroundImage: {
+      'png-pattern': 'url("/empty-bg.jpg")',
+    }
   },
   plugins: [require('@tailwindcss/typography')],
 }

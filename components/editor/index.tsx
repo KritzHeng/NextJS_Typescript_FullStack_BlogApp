@@ -8,12 +8,16 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Link from '@tiptap/extension-link'
 // import { SelectionRange } from "prosemirror-state";
 import EditLink from "./Link/EditLink";
+import GalleryModal, { ImageSelectionResult } from "./ToolBar/GalleryModal";
+import TipTapImage from '@tiptap/extension-image'
 
 interface Props { }
 
 const Editor: FC<Props> = (props): JSX.Element => {
     const [selectionRange, setSelectionRange] = useState<Range>();
-    
+    const [showGallery, setShowGallery] = useState(false);
+
+
     const editor = useEditor({
         extensions: [StarterKit, Underline,
             Link.configure({
@@ -33,39 +37,60 @@ const Editor: FC<Props> = (props): JSX.Element => {
                 height: 472.5,
                 HTMLAttributes: {
                     class: 'mx-auto rounded'
-            }}),
+                }
+            }),
+            TipTapImage.configure({
+                HTMLAttributes: {
+                    class: 'mx-auto'
+                }
+            })
         ],
         editorProps: {
-          handleClick(view, pos, event) {
-            const {state} = view
-            const selectionRange = getMarkRange(state.doc.resolve(pos), state.schema.marks.link);
-            if(selectionRange) setSelectionRange(selectionRange);
-        },
+            handleClick(view, pos, event) {
+                const { state } = view
+                const selectionRange = getMarkRange(state.doc.resolve(pos), state.schema.marks.link);
+                if (selectionRange) setSelectionRange(selectionRange);
+            },
             attributes: {
                 class: 'prose prose-lg focus:outline-none dark:prose-invert max-w-full mx-auto h-full'
             }
         },
     }
     )
-    useEffect(()=> {
-        if(editor && selectionRange){
+
+    const handleImageSelection = (result: ImageSelectionResult) => {
+        // if (!editor) return;
+        editor?.chain().focus().setImage({ src: result.src, alt: result.altText }).run();
+
+    }
+
+    useEffect(() => {
+        if (editor && selectionRange) {
             editor.commands.setTextSelection(selectionRange);
         }
-    },[editor, selectionRange])
+    }, [editor, selectionRange])
 
     return (
-        <div className="p-3 dark:bd-primary-dark bg-primary transition">
-            {/* <button onClick={() => {
+        <>
+            <div className="p-3 dark:bd-primary-dark bg-primary transition">
+                {/* <button onClick={() => {
                 if(!editor) return
                 editor.chain()
                 .toggleBold()
                 .run()
             }}>Bold</button> */}
-            <TollBar editor={editor} />
-            <div className="h-[1px] w-full bg-secondary-dark dark:bg-secondary-light mx-3" />
-            {editor? <EditLink editor={editor} />: null}
-            <EditorContent editor={editor} />
-        </div>)
+                <TollBar editor={editor} onOpenImageClick={() => setShowGallery(true)}/>
+                <div className="h-[1px] w-full bg-secondary-dark dark:bg-secondary-light mx-3" />
+                {editor ? <EditLink editor={editor} /> : null}
+                <EditorContent editor={editor} />
+            </div>
+
+            <GalleryModal visible={showGallery} 
+            onClose={() => setShowGallery(false)} 
+            onSelect={handleImageSelection}
+            />
+        </>
+    )
 }
 
 export default Editor;
