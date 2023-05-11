@@ -8,7 +8,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Link from '@tiptap/extension-link'
 // import { SelectionRange } from "prosemirror-state";
 import EditLink from "./Link/EditLink";
-import GalleryModal, { ImageSelectionResult } from "./ToolBar/GalleryModal";
+import GalleryModal, { ImageSelectionResult } from "./GalleryModal";
 import TipTapImage from '@tiptap/extension-image'
 
 interface Props { }
