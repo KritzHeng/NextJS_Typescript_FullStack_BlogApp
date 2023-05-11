@@ -10,12 +10,32 @@ import Link from '@tiptap/extension-link'
 import EditLink from "./Link/EditLink";
 import GalleryModal, { ImageSelectionResult } from "./GalleryModal";
 import TipTapImage from '@tiptap/extension-image'
+import axios from 'axios'
 
 interface Props { }
 
 const Editor: FC<Props> = (props): JSX.Element => {
     const [selectionRange, setSelectionRange] = useState<Range>();
     const [showGallery, setShowGallery] = useState(false);
+    const [images, setImages] = useState<{ src: string }[]>([]);
+    const [uploading, setUploading] = useState(false);
+
+    const fetchImages = async () => {
+        const { data } = await axios('/api/image');
+        console.log(data);
+        setImages(data);
+    };
+
+    const handleImageUpload = async (image: File) => {
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('image', image);
+        const { data } = await axios.post('/api/image', formData);
+        setUploading(false);
+        console.log(data);
+        const newImage = { src: data.url }
+        setImages([newImage, ...images]);
+    };
 
 
     const editor = useEditor({
@@ -70,6 +90,10 @@ const Editor: FC<Props> = (props): JSX.Element => {
         }
     }, [editor, selectionRange])
 
+    useEffect(() => {
+        fetchImages();
+    }, [])
+
     return (
         <>
             <div className="p-3 dark:bd-primary-dark bg-primary transition">
@@ -79,15 +103,19 @@ const Editor: FC<Props> = (props): JSX.Element => {
                 .toggleBold()
                 .run()
             }}>Bold</button> */}
-                <TollBar editor={editor} onOpenImageClick={() => setShowGallery(true)}/>
+                <TollBar editor={editor} onOpenImageClick={() => setShowGallery(true)} />
                 <div className="h-[1px] w-full bg-secondary-dark dark:bg-secondary-light mx-3" />
                 {editor ? <EditLink editor={editor} /> : null}
                 <EditorContent editor={editor} />
             </div>
 
-            <GalleryModal visible={showGallery} 
-            onClose={() => setShowGallery(false)} 
-            onSelect={handleImageSelection}
+            <GalleryModal
+                visible={showGallery}
+                onClose={() => setShowGallery(false)}
+                onSelect={handleImageSelection}
+                images={images}
+                onFileSelect={handleImageUpload}
+                uploading={uploading}
             />
         </>
     )
